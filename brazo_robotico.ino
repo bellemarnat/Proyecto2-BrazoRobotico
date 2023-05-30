@@ -3,8 +3,7 @@
 #include <SoftwareSerial.h>
 #include <Servo.h>
 
-// Pines para el LCD (RS, E, D4, D5, D6, D7)
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2); // Pines para el LCD (RS, E, D4, D5, D6, D7)
 
 // Pines para la comunicación serial por software
 SoftwareSerial mySerial(0, 1); // RX, TX
@@ -20,11 +19,15 @@ int pinservo2 = 7;
 int pinservo3 = 6;
 int pinservo4 = 5;
 
-// Pines para los potenciómetros
-int potPin1 = A0;
-int potPin2 = A1;
-int potPin3 = A2;
-int potPin4 = A3;
+// Pines para los joysticks
+int joy1PinX = A0;
+int joy1PinY = A1;
+int joy2PinX = A2;
+int joy2PinY = A3;
+
+// Interrupciones
+volatile bool pinChanged = false;
+volatile bool timerInterrupted = false;
 
 void setup() {
   lcd.begin(16, 2);
