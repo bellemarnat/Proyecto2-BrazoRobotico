@@ -7,7 +7,7 @@
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 // Pines para la comunicación serial por software
-SoftwareSerial mySerial(10, 9); // RX, TX
+SoftwareSerial mySerial(0, 1); // RX, TX
 
 Servo servo1; // Base
 Servo servo2; // Brazo
