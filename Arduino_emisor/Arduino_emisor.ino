@@ -1,8 +1,8 @@
 // Arduino emisor
 
-#include <EEPROM.h>
 #include <LiquidCrystal.h>
 #include <Servo.h>
+#include <SoftwareSerial.h>
 
 #define JOY1_X A0
 #define JOY1_Y A1
@@ -10,6 +10,7 @@
 #define JOY2_Y A3
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2); // Pines para el LCD (RS, E, D4, D5, D6, D7)
+SoftwareSerial mySerial(0, 1); // RX, TX
 
 Servo servo1; // Base
 Servo servo2; // Brazo
@@ -23,7 +24,8 @@ uint8_t pinservo4 = 11;
 
 void setup() {
   Serial.begin(9600); // Inicializa la comunicación serial a 9600 bps
-
+  mySerial.begin(9600);
+  
   lcd.begin(16, 2);
   lcd.print("Iniciando...");
   delay(1000);
@@ -51,7 +53,7 @@ void setup() {
 
 // Reads an ADC channel
 int readADC(int channel) {
-  ADMUX &= 0xF0;           // Clear the older channel that was read
+  ADMUX &= 0xF0;           // Borrar el canal antiguo leido 
   ADMUX |= channel;        // Defines the new ADC channel to be read
   ADCSRA |= (1 << ADSC);   // Starts a new conversion
   while (ADCSRA & (1 << ADSC));  // Wait until the conversion is done
@@ -61,7 +63,6 @@ int readADC(int channel) {
 void loop() {
   lcd.setCursor(0, 0);
   lcd.print("EEPROM: ");
-  lcd.print(EEPROM.read(0));
 
   int joy1_x = readADC(JOY1_X);
   int joy1_y = readADC(JOY1_Y);
