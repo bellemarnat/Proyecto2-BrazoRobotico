@@ -2,6 +2,17 @@
 
 #include <Servo.h> // procesar datos 
 
+
+
+
+
+
+
+
+
+
+
+
 Servo servo1; // Base
 Servo servo2; // Brazo
 Servo servo3; // Antebrazo
