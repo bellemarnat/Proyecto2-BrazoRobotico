@@ -1,5 +1,3 @@
-// Arduino emisor
-
 #include <LiquidCrystal.h>
 #include <Servo.h>
 #include <SoftwareSerial.h>
@@ -10,12 +8,7 @@
 #define JOY2_Y A3
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2); // Pines para el LCD (RS, E, D4, D5, D6, D7)
-SoftwareSerial mySerial(0, 1); // RX, TX
-
-Servo servo1; // Base
-Servo servo2; // Brazo
-Servo servo3; // Antebrazo
-Servo servo4; // Pinza
+SoftwareSerial mySerial(10, 11); // RX, TX
 
 uint8_t pinservo1 = 8;
 uint8_t pinservo2 = 9;
@@ -30,22 +23,11 @@ void setup() {
   lcd.print("Iniciando...");
   delay(1000);
 
-  servo1.attach(pinservo1, 610, 2550); // revisar esto, no deberia tener tantos parametros
-  servo2.attach(pinservo2, 670, 2540);
-  servo3.attach(pinservo3, 660, 2600);
-  servo4.attach(pinservo4, 660, 2600);
-
   // Configura los pines del joystick como entrada
   DDRC &= ~(1 << DDC0);
   DDRC &= ~(1 << DDC1);
   DDRC &= ~(1 << DDC2);
   DDRC &= ~(1 << DDC3);
-
-  // Configura los pines del servo como salida
-  DDRB |= (1 << DDB0);
-  DDRB |= (1 << DDB1);
-  DDRB |= (1 << DDB2);
-  DDRB |= (1 << DDB3);
 
   // Configura el número de columnas y filas del LCD
   lcd.begin(16, 2);
@@ -75,20 +57,15 @@ void loop() {
   int posAntebrazo = map(joy2_x, 0, 1023, 0, 180);
   int posPinza = map(joy2_y, 0, 1023, 0, 180);
 
-  servo1.write(posBase);
-  servo2.write(posBrazo);
-  servo3.write(posAntebrazo);
-  servo4.write(posPinza);
-
   // Envía los valores de posición a través de la comunicación serial
-  Serial.print("B");
-  Serial.print(posBase);
-  Serial.print("A");
-  Serial.print(posBrazo);
-  Serial.print("C");
-  Serial.print(posAntebrazo);
-  Serial.print("P");
-  Serial.println(posPinza);
+  mySerial.print("B");
+  mySerial.print(posBase);
+  mySerial.print("A");
+  mySerial.print(posBrazo);
+  mySerial.print("C");
+  mySerial.print(posAntebrazo);
+  mySerial.print("P");
+  mySerial.println(posPinza);
 
   lcd.setCursor(0, 1);
   lcd.print("Base: ");

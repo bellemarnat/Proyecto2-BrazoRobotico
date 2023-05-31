@@ -1,4 +1,3 @@
-// ******************************************************** Arduino Receptor
 #include <Servo.h>
 #include <SoftwareSerial.h>
 
@@ -7,7 +6,7 @@ Servo servo2; // Brazo
 Servo servo3; // Antebrazo
 Servo servo4; // Pinza
 
-SoftwareSerial mySerial(0, 1); // RX, TX
+SoftwareSerial mySerial(10, 11); // RX, TX
 
 void setup() {
   Serial.begin(9600);
@@ -46,4 +45,3 @@ void loop() {
     }
   }
 }
-
