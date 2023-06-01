@@ -15,6 +15,15 @@ uint8_t pinservo2 = 9;
 uint8_t pinservo3 = 10;
 uint8_t pinservo4 = 11;
 
+// declaración de variable para servo motor
+Servo motorPinza;
+//botón para interrupción
+const int buttonPin = 13;
+
+//timer
+unsigned long timerStartTime = 0;
+const unsigned long timerDuration = 5000;  // 5 segundos
+
 void setup() {
   Serial.begin(9600); // Inicializa la comunicación serial a 9600 bps
   mySerial.begin(9600);
@@ -31,6 +40,17 @@ void setup() {
 
   // Configura el número de columnas y filas del LCD
   lcd.begin(16, 2);
+
+// Configurar pin de botón como entrada con resistencia de pull-down externa
+  DDRB &= ~(1 << DDB5);   // Configurar pin 13 como entrada
+  PORTB |= (1 << PORTB5); // Activar resistencia de pull-down en pin 13
+  
+  // Configurar y mover el servo motor a la posición inicial
+  motorPinza.attach(motorPin);
+  motorPinza.write(90);
+
+  Serial.begin(9600);
+    
 }
 
 // Reads an ADC channel
@@ -75,4 +95,22 @@ void loop() {
 
   delay(100);
   lcd.clear();
+//Interrupción 
+   if (buttonPressed) {
+    // Mover el servo motor 90 grados
+    motorPinza.write(0);
+
+    // Iniciar el temporizador
+    timerStartTime = millis();
+
+    // Restablecer el estado del botón
+    buttonPressed = false;
+    
+    // Envía el comando al receptor a través de la comunicación serial
+    Serial.write("MoverServo");
 }
+
+if (millis() - timerStartTime >= timerDuration) {
+    // Mover el servo motor a la posición inicial
+    motor.write(90);
+  }
