@@ -1,5 +1,6 @@
 #include <Servo.h>
 #include <SoftwareSerial.h>
+#include <LiquidCrystal_I2C.h>
 
 Servo servo1; // Base
 Servo servo2; // Brazo
@@ -7,10 +8,15 @@ Servo servo3; // Antebrazo
 Servo servo4; // Pinza
 
 SoftwareSerial mySerial(4, 5); // RX, TX
+LiquidCrystal_I2C lcd(0x27, 16, 2);  // Dirección I2C de la pantalla LCD
+
 
 void setup() {
+  
   Serial.begin(9600); // Inicializa la comunicación serial a 9600 bps
   mySerial.begin(9600);
+  lcd.init();  // Inicializar la pantalla LCD
+  lcd.backlight();
 
   servo1.attach(8);
   servo2.attach(9);
@@ -37,6 +43,11 @@ int pot_value0 = ADC;
 }
 
 void loop() {
+
+  led.setCursor(0,0);
+  lcd.print("Bienvenido");  // Mostrar mensaje en la primera línea
+
+  
   if (mySerial.available() >= 4) {
     int pot1_value = mySerial.read();
     int pot2_value = mySerial.read();

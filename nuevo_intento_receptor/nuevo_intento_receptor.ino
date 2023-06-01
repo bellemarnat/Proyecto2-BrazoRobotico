@@ -37,6 +37,7 @@ int pot_value0 = ADC;
 }
 
 void loop() {
+  
   if (mySerial.available() >= 8) {
     char receivedChar = mySerial.read();
     if (receivedChar == 'B') {
