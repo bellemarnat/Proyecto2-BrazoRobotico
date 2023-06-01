@@ -5,7 +5,7 @@
 #define JOY2_X 2
 #define JOY2_Y 3
 
-SoftwareSerial mySerial(10, 11); // RX, TX
+SoftwareSerial mySerial(0, 1); // RX, TX
 
 void setup() {
   mySerial.begin(9600);

@@ -6,7 +6,7 @@ Servo servo2;
 Servo servo3;
 Servo servo4;
 
-SoftwareSerial mySerial(10, 11); // RX, TX
+SoftwareSerial mySerial(2,3); // RX, TX
 
 void setup() {
   mySerial.begin(9600);
