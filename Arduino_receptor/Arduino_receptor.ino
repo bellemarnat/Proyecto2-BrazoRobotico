@@ -17,6 +17,8 @@ void setup() {
   servo2.attach(9, 670, 2540);
   servo3.attach(10, 660, 2600);
   servo4.attach(11, 660, 2600);
+
+  
 }
 
 void loop() {
@@ -26,6 +28,16 @@ void loop() {
     int posBrazo;
     int posAntebrazo;
     int posPinza;
+    
+     // Leer el comando recibido
+    String command = Serial.readString();
+    // Realizar acciones según el comando recibido
+    if (command == "MoverServo") {
+      // Mover el servo motor a una posición específica
+      servo4.write(0);
+      delay(1000);
+      servo4.write(90);
+    }
     
     if (mySerial.read() == 'B') {
       posBase = mySerial.parseInt();
