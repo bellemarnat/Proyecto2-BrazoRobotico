@@ -1,6 +1,7 @@
 #include <LiquidCrystal.h>
 #include <Servo.h>
 #include <SoftwareSerial.h>
+#include <EEPROM.h>
 
 #define JOY1_X A0
 #define JOY1_Y A1
@@ -15,8 +16,25 @@ uint8_t pinservo2 = 9;
 uint8_t pinservo3 = 10;
 uint8_t pinservo4 = 11;
 
+//variables para guardar posiciones en servomotores
+struct ServoPosition {
+  int servo1Angle;
+  int servo2Angle;
+  int servo3Angle;
+  int servo4Angle;
+};
+
+const int maxPositions = 10;  // Número máximo de posiciones a grabar
+ServoPosition positions[maxPositions];
+int currentPosition = 0;  // Índice de la posición actual
+
+
 // declaración de variable para servo motor
+Servo servo1;
+Servo servo2;
+Servo servo3;
 Servo servo4;
+
 //botón para interrupción
 const int buttonPin = 13;
 
@@ -38,9 +56,6 @@ void setup() {
   DDRC &= ~(1 << DDC2);
   DDRC &= ~(1 << DDC3);
 
-  // Configura el número de columnas y filas del LCD
-  lcd.begin(16, 2);
-
 // Configurar pin de botón como entrada con resistencia de pull-down externa
   DDRB &= ~(1 << DDB5);   // Configurar pin 13 como entrada
   PORTB |= (1 << PORTB5); // Activar resistencia de pull-down en pin 13
@@ -49,8 +64,12 @@ void setup() {
   servo4.attach(motorPin);
   servo4.write(90);
 
+//  configuración attach para guardar posiciones en la eeprom
+  servo1.attach(8);
+  servo2.attach(9);
+  servo3.attach(10);
+  //servo4.attach(12); no se si este attach interfiere con la linea 64 empleada para el timer
   Serial.begin(9600);
-    
 }
 
 // Reads an ADC channel
