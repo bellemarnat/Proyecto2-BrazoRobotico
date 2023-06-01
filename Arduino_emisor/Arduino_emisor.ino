@@ -16,7 +16,7 @@ uint8_t pinservo3 = 10;
 uint8_t pinservo4 = 11;
 
 // declaración de variable para servo motor
-Servo motorPinza;
+Servo servo4;
 //botón para interrupción
 const int buttonPin = 13;
 
@@ -46,8 +46,8 @@ void setup() {
   PORTB |= (1 << PORTB5); // Activar resistencia de pull-down en pin 13
   
   // Configurar y mover el servo motor a la posición inicial
-  motorPinza.attach(motorPin);
-  motorPinza.write(90);
+  servo4.attach(motorPin);
+  servo4.write(90);
 
   Serial.begin(9600);
     
@@ -98,7 +98,7 @@ void loop() {
 //Interrupción 
    if (buttonPressed) {
     // Mover el servo motor 90 grados
-    motorPinza.write(0);
+    servo4.write(0);
 
     // Iniciar el temporizador
     timerStartTime = millis();
@@ -112,5 +112,5 @@ void loop() {
 
 if (millis() - timerStartTime >= timerDuration) {
     // Mover el servo motor a la posición inicial
-    motor.write(90);
+    servo4.write(90);
   }

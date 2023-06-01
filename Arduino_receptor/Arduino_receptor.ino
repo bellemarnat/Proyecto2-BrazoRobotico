@@ -6,6 +6,7 @@ Servo servo2; // Brazo
 Servo servo3; // Antebrazo
 Servo servo4; // Pinza
 
+
 SoftwareSerial mySerial(10, 11); // RX, TX
 
 void setup() {
