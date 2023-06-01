@@ -18,37 +18,28 @@ void setup() {
   servo4.attach(11);
 }
 
-int readADC(int pin) {
-  ADCSRA |= (1 << ADEN);        // Habilitar ADC
-  ADMUX = (0 << REFS1) | (1 << REFS0) | (0 << ADLAR) | (pin & 0x07); // Configurar referencia y pin
-  ADCSRA |= (1 << ADSC);        // Iniciar conversión
-  while (ADCSRA & (1 << ADSC)); // Esperar a que la conversión termine
-  return ADC;                   // Retornar el valor leído
-}
-
 void loop() {
   if (mySerial.available() >= 8) {
-    char receivedChar = mySerial.read();
-    if (receivedChar == 'B') {
-      int pot1_value = mySerial.read();
-      int pot2_value = mySerial.read();
-      int pot3_value = mySerial.read();
-      int pot4_value = mySerial.read();
+    int analog1_value = mySerial.read() << 8; // Recibe los 8 bits superiores
+    analog1_value |= mySerial.read(); // Recibe los 8 bits inferiores
 
-      int analog1_value = readADC(A0); // Potenciometro de 10k
-      int analog2_value = readADC(A1); // Potenciometro de 5k
-      int analog3_value = readADC(A2); // Potenciometro de 10k
-      int analog4_value = readADC(A3); // Potenciometro de 5k
+    int analog2_value = mySerial.read() << 8;
+    analog2_value |= mySerial.read();
 
-      int posBase = map(analog1_value, 0, 1023, 0, 360);
-      int posBrazo = map(analog2_value, 0, 1023, 0, 180);
-      int posAntebrazo = map(analog3_value, 0, 1023, 0, 180);
-      int posPinza = map(analog4_value, 0, 1023, 0, 180);
+    int analog3_value = mySerial.read() << 8;
+    analog3_value |= mySerial.read();
 
-      servo1.write(posBase);
-      servo2.write(posBrazo);
-      servo3.write(posAntebrazo);
-      servo4.write(posPinza);
-    }
+    int analog4_value = mySerial.read() << 8;
+    analog4_value |= mySerial.read();
+
+    int posBase = map(analog1_value, 0, 1023, 0, 180);
+    int posBrazo = map(analog2_value, 0, 1023, 0, 180);
+    int posAntebrazo = map(analog3_value, 0, 1023, 0, 180);
+    int posPinza = map(analog4_value, 0, 1023, 0, 180);
+
+    servo1.write(posBase);
+    servo2.write(posBrazo);
+    servo3.write(posAntebrazo);
+    servo4.write(posPinza);
   }
 }

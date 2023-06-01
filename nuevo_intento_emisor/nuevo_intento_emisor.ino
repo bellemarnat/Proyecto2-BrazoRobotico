@@ -1,51 +1,37 @@
-#include <Servo.h>
 #include <SoftwareSerial.h>
-
-Servo servo1; // Base
-Servo servo2; // Brazo
-Servo servo3; // Antebrazo
-Servo servo4; // Pinza
 
 SoftwareSerial mySerial(4, 5); // RX, TX
 
 void setup() {
   Serial.begin(9600); // Inicializa la comunicación serial a 9600 bps
   mySerial.begin(9600);
-
-  servo1.attach(8);
-  servo2.attach(9);
-  servo3.attach(10);
-  servo4.attach(11);
 }
 
 int readADC(int pin) {
-  ADCSRA |= (1 << ADEN);        // Habilitar ADC
-  ADMUX = (0 << REFS1) | (1 << REFS0) | (0 << ADLAR) | (pin & 0x07); // Configurar referencia y pin
-  ADCSRA |= (1 << ADSC);        // Iniciar conversión
+  ADMUX = (ADMUX & 0xF8) | (pin & 0x07); // Seleccionar el canal de entrada
+  ADCSRA |= (1 << ADSC); // Iniciar la conversión
   while (ADCSRA & (1 << ADSC)); // Esperar a que la conversión termine
-  return ADC;                   // Retornar el valor leído
+  return ADC; // Devolver el valor leído
 }
 
+
 void loop() {
-  if (mySerial.available() >= 4) {
-    int pot1_value = mySerial.read();
-    int pot2_value = mySerial.read();
-    int pot3_value = mySerial.read();
-    int pot4_value = mySerial.read();
+  int pot1_value = readADC(0); // Potenciometro de 10k
+  int pot2_value = readADC(1); // Potenciometro de 5k
+  int pot3_value = readADC(2); // Potenciometro de 10k
+  int pot4_value = readADC(3); // Potenciometro de 5k
 
-    int analog1_value = readADC(A0); // Potenciometro de 10k
-    int analog2_value = readADC(A1); // Potenciometro de 5k
-    int analog3_value = readADC(A2); // Potenciometro de 10k
-    int analog4_value = readADC(A3); // Potenciometro de 5k
+  mySerial.write(pot1_value >> 8); // Envia los 8 bits superiores
+  mySerial.write(pot1_value & 0xFF); // Envia los 8 bits inferiores
 
-    int posBase = map(analog1_value, 0, 1023, 0, 360);
-    int posBrazo = map(analog2_value, 0, 1023, 0, 180);
-    int posAntebrazo = map(analog3_value, 0, 1023, 0, 180);
-    int posPinza = map(analog4_value, 0, 1023, 0, 180);
+  mySerial.write(pot2_value >> 8);
+  mySerial.write(pot2_value & 0xFF);
 
-    servo1.write(posBase);
-    servo2.write(posBrazo);
-    servo3.write(posAntebrazo);
-    servo4.write(posPinza);
-  }
+  mySerial.write(pot3_value >> 8);
+  mySerial.write(pot3_value & 0xFF);
+
+  mySerial.write(pot4_value >> 8);
+  mySerial.write(pot4_value & 0xFF);
+
+  delay(100);
 }
