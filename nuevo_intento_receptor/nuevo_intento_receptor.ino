@@ -19,11 +19,21 @@ void setup() {
 }
 
 int readADC(int pin) {
-  ADCSRA |= (1 << ADEN);        // Habilitar ADC
+  /*ADCSRA |= (1 << ADEN);        // Habilitar ADC
   ADMUX = (0 << REFS1) | (1 << REFS0) | (0 << ADLAR) | (pin & 0x07); // Configurar referencia y pin
   ADCSRA |= (1 << ADSC);        // Iniciar conversión
   while (ADCSRA & (1 << ADSC)); // Esperar a que la conversión termine
-  return ADC;                   // Retornar el valor leído
+  return ADC;                   // Retornar el valor leído*/
+ADMUX = (1<<REFS0);
+ADCSRA = (1<< ADEN)|(1<< ADPS0) |(1<< ADPS1)|(1<< ADPS2);
+
+ADMUX &= 0xF0;
+ADMUX |= 0b00000; 
+ADCSRA |= (1 << ADSC);
+while (ADCSRA & (1 << ADSC));
+return ADC;   
+int pot_value0 = ADC;
+
 }
 
 void loop() {

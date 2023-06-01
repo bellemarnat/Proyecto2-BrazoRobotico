@@ -4,13 +4,12 @@ const int buttonPin = 2;
 const int motorPin = 9;
 
 volatile bool buttonPressed = false;
-
 Servo motor;
 unsigned long timerStartTime = 0;
 const unsigned long timerDuration = 5000;  // 5 segundos
 
 void setup() {
-  // Configurar pin de botón como entrada con resistencia de pull-down externa
+  // Configurar pin de botón como entrada con resistencia de pull-down interna
   DDRB &= ~(1 << DDB2);  // Configurar pin 2 como entrada
   PORTB |= (1 << PORTB2); // Activar resistencia de pull-down en pin 2
 
@@ -52,7 +51,7 @@ void loop() {
 // Rutina de interrupción para el cambio de estado en el pin del botón
 ISR(PCINT0_vect) {
   // Verificar el estado del botón y actualizar la bandera correspondiente
-  if (!(PINB & (1 << PINB2))) {
+  if (PINB & (1 << PINB2)) {
     buttonPressed = true;
   }
 }
