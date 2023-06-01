@@ -40,6 +40,8 @@ while (ADCSRA & (1 << ADSC));
 return ADC;   
 int pot_value0 = ADC;
 
+
+
 }
 
 void loop() {

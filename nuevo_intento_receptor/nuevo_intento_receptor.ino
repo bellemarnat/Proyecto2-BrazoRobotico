@@ -12,6 +12,8 @@ void setup() {
   Serial.begin(9600);
   mySerial.begin(9600);
 
+
+
   servo1.attach(8);
   servo2.attach(9);
   servo3.attach(10);
