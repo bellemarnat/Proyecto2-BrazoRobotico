@@ -1,11 +1,28 @@
 #include <SoftwareSerial.h>
+#include <Servo.h>
 
 SoftwareSerial mySerial(4, 5); // RX, TX
+const int buttonPin = 2; //Pin para el botón,
+//en Arduino Uno los pines que funcionan para realizar interrupciones son los pines 2 y 3
+Servo Servo4;
+const int servoPin = 11; // Servo de la pinza
+bool servoMoved = false;
+unsigned long startTime = 0; // Timer comienza en 0
 
 #define JOY1_X 0 // Pin A0
 #define JOY1_Y 1 // Pin A1
 #define JOY2_X 2 // Pin A2
 #define JOY2_Y 3 // Pin A3
+
+void myInterruptFunction() {
+  // Código a ejecutar cuando ocurra la interrupción
+  // Puede ser cualquier instrucción o llamada a función
+  if (!servoMoved) {
+    Servo4.write(45);
+    servoMoved = true;
+    startTime = millis();  // Guardar el tiempo actual
+  }
+}
 
 void setup() {
   Serial.begin(9600);
@@ -14,6 +31,10 @@ void setup() {
   // Configurar el ADC
   ADMUX = (1 << REFS0); // use AVcc as the reference
   ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); // Habilitar el ADC configurando el preescalador a 128
+  
+  attachInterrupt(digitalPinToInterrupt(buttonPin), myInterruptFunction, RISING);
+  Servo4.attach(servoPin);
+  Servo4.write(0); 
 }
 
 void loop() {
@@ -46,4 +67,11 @@ int readADC(int channel) {
   ADCSRA |= (1 << ADSC); // Iniciar la conversión
   while (ADCSRA & (1 << ADSC)); // Esperar a que la conversión termine
   return ADC; // Leer el valor de la conversión
+}
+ISR(TIMER2_COMPA_vect) {
+  // Verificar si ha pasado el tiempo necesario para volver a la posición inicial
+  if (servoMoved && (millis() - startTime >= 10000)) {
+    Servo4.write(0);  // Volver a la posición inicial (0 grados)
+    servoMoved = false;  // Reiniciar el estado del servo
+  }
 }

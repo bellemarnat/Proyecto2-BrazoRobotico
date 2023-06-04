@@ -6,10 +6,24 @@ Servo Servo2;
 Servo Servo3;
 Servo Servo4;
 
+const int buttonPin = 2;
+bool servoMoved = false;
+unsigned long startTime = 0; // Timer comienza en 0
+
 SoftwareSerial mySerial(4, 5); // RX, TX
 
 int val1, val2, val3, val4;
 int prev_val1, prev_val2, prev_val3, prev_val4;
+
+void myInterruptFunction() {
+  // Código a ejecutar cuando ocurra la interrupción
+  // Puede ser cualquier instrucción o llamada a función
+  if (!servoMoved) {
+    Servo4.write(45);
+    servoMoved = true;
+    startTime = millis();  // Guardar el tiempo actual
+  }
+}
 
 void setup() {
   Serial.begin(9600);
@@ -20,7 +34,11 @@ void setup() {
   Servo3.attach(10);
   Servo4.attach(11);
   
+  
   prev_val1 = prev_val2 = prev_val3 = prev_val4 = 90; // Servo initial position
+  // Configurar la interrupción en el pin D2
+  attachInterrupt(digitalPinToInterrupt(buttonPin), myInterruptFunction, RISING);
+
 }
 
 void loop() {
@@ -94,3 +112,4 @@ void smoothServoMove() {
   prev_val3 = val3;
   prev_val4 = val4;
 }
+
