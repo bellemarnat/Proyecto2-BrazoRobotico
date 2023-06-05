@@ -6,9 +6,6 @@ Servo Servo2;
 Servo Servo3;
 Servo Servo4;
 
-bool servoMoved = false;
-unsigned long startTime = 0;
-int servoAngle4 = 0;
 
 SoftwareSerial mySerial(4, 5); // RX, TX
 
