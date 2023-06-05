@@ -8,6 +8,8 @@ Servo Servo4;
 const int servoPin = 11; // Servo de la pinza
 bool servoMoved = false;
 unsigned long startTime = 0; // Timer comienza en 0
+int servoAngle4 = 0;
+
 
 #define JOY1_X 0 // Pin A0
 #define JOY1_Y 1 // Pin A1
@@ -18,7 +20,8 @@ void myInterruptFunction() {
   // Código a ejecutar cuando ocurra la interrupción
   // Puede ser cualquier instrucción o llamada a función
   if (!servoMoved) {
-    Servo4.write(45);
+    servoAngle4 = 45;
+    Servo4.write(servoAngle4);
     servoMoved = true;
     startTime = millis();  // Guardar el tiempo actual
   }
@@ -32,9 +35,19 @@ void setup() {
   ADMUX = (1 << REFS0); // use AVcc as the reference
   ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); // Habilitar el ADC configurando el preescalador a 128
   
-  attachInterrupt(digitalPinToInterrupt(buttonPin), myInterruptFunction, RISING);
-  Servo4.attach(servoPin);
+  pinMode(buttonPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(buttonPin), myInterruptFunction, FALLING);
   Servo4.write(0); 
+
+  cli();
+  TCCR2A = 0;
+  TCCR2B = 0;
+  TCNT2 = 0;
+  OCR2A = 249;
+  TCCR2A |= (1 << WGM21);
+  TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);
+  TIMSK2 |= (1 << OCIE2A);
+  sei();
 }
 
 void loop() {
@@ -60,6 +73,11 @@ void loop() {
   mySerial.print(joy2_x);
   mySerial.print(',');
   mySerial.println(joy2_y); // Asegúrate de que los valores estén separados por una coma y que el último valor termine con un salto de línea
+
+  if (!servoMoved) {
+  servoAngle4 = map(potValue4, 0, 1023, 0, 180);
+  }
+  Servo4.write(servoAngle4);
 }
 
 int readADC(int channel) {
