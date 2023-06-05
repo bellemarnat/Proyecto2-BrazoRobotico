@@ -6,13 +6,29 @@ Servo Servo2;
 Servo Servo3;
 Servo Servo4;
 
+const int buttonPin = 2; //Pin para el botón,
+//en Arduino Uno los pines que funcionan para realizar interrupciones son los pines 2 y 3
+const int servoPin = 11; // Servo de la pinza
+bool servoMoved = false;
+unsigned long startTime = 0; // Timer comienza en 0
+int servoAngle4 = 0;
 
 SoftwareSerial mySerial(4, 5); // RX, TX
 
 int val1, val2, val3, val4;
 int prev_val1, prev_val2, prev_val3, prev_val4;
 
+void myInterruptFunction() {
+  // Código a ejecutar cuando ocurra la interrupción
+  // Puede ser cualquier instrucción o llamada a función
+  if (!servoMoved) {
+    servoAngle4 = 45;
+    Servo4.write(servoAngle4);
+    servoMoved = true;
+    startTime = millis();  // Guardar el tiempo actual
+  }
 }
+
 
 void setup() {
   Serial.begin(9600);
@@ -25,6 +41,20 @@ void setup() {
   
   
   prev_val1 = prev_val2 = prev_val3 = prev_val4 = 90; // Servo initial position
+
+  pinMode(buttonPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(buttonPin), myInterruptFunction, FALLING);
+  Servo4.write(0); 
+
+  cli();
+  TCCR2A = 0;
+  TCCR2B = 0;
+  TCNT2 = 0;
+  OCR2A = 249;
+  TCCR2A |= (1 << WGM21);
+  TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20);
+  TIMSK2 |= (1 << OCIE2A);
+  sei();
   
   
 }
@@ -50,6 +80,12 @@ void loop() {
 
     smoothServoMove(); // Move servos in a smooth way
   }
+
+  
+  if (!servoMoved) {
+  servoAngle4 = map(potValue4, 0, 1023, 0, 180);
+  }
+  Servo4.write(servoAngle4);
 }
 
 void assignValue(int index, String value) {
@@ -99,5 +135,13 @@ void smoothServoMove() {
   prev_val2 = val2;
   prev_val3 = val3;
   prev_val4 = val4;
+}
+
+ISR(TIMER2_COMPA_vect) {
+  // Verificar si ha pasado el tiempo necesario para volver a la posición inicial
+  if (servoMoved && (millis() - startTime >= 10000)) {
+    Servo4.write(0);  // Volver a la posición inicial (0 grados)
+    servoMoved = false;  // Reiniciar el estado del servo
+  }
 }
 
