@@ -1,13 +1,16 @@
 #include <SoftwareSerial.h>
 #include <Servo.h>
+#include <EEPROM.h>
 
 Servo Servo1;
 Servo Servo2;
 Servo Servo3;
 Servo Servo4;
 
-const int buttonPin = 2; //Pin para el botón,
-//en Arduino Uno los pines que funcionan para realizar interrupciones son los pines 2 y 3
+const int buttonPin = 2; //Pin para el botón que moviliza pinza con interrupción
+const int guardarButtonPin = 3;
+const int restaurarButtonPin = 12;
+
 const int servoPin = 11; // Servo de la pinza
 bool servoMoved = false;
 unsigned long startTime = 0; // Timer comienza en 0
@@ -18,11 +21,38 @@ SoftwareSerial mySerial(4, 5); // RX, TX
 int val1, val2, val3, val4;
 int prev_val1, prev_val2, prev_val3, prev_val4;
 
+struct ServoPositions {
+  int servo1Pos;
+  int servo2Pos;
+  int servo3Pos;
+  int servo4Pos;
+};
+
+ServoPositions savedPositions;
+void guardarPosiciones() {
+  savedPositions.servo1Pos = Servo1.read();
+  savedPositions.servo2Pos = Servo2.read();
+  savedPositions.servo3Pos = Servo3.read();
+  savedPositions.servo4Pos = Servo4.read();
+
+  int address = 0;
+  EEPROM.put(address, savedPositions);}
+
+  void restaurarPosiciones() {
+  int address = 0;
+  EEPROM.get(address, savedPositions);
+
+  Servo1.write(savedPositions.servo1Pos);
+  Servo2.write(savedPositions.servo2Pos);
+  Servo3.write(savedPositions.servo3Pos);
+  Servo4.write(savedPositions.servo4Pos);
+}
+  
 void myInterruptFunction() {
   // Código a ejecutar cuando ocurra la interrupción
   // Puede ser cualquier instrucción o llamada a función
   if (!servoMoved) {
-    servoAngle4 = 45;
+    servoAngle4 = 60;
     Servo4.write(servoAngle4);
     servoMoved = true;
     startTime = millis();  // Guardar el tiempo actual
@@ -43,6 +73,8 @@ void setup() {
   prev_val1 = prev_val2 = prev_val3 = prev_val4 = 90; // Servo initial position
 
   pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(guardarButtonPin, INPUT_PULLUP);
+  pinMode(restaurarButtonPin, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(buttonPin), myInterruptFunction, FALLING);
   Servo4.write(0); 
 
@@ -81,7 +113,15 @@ void loop() {
     smoothServoMove(); // Move servos in a smooth way
   }
 
-  
+  if (digitalRead(guardarButtonPin) == LOW) {
+    guardarPosiciones();
+    delay(500);
+  }
+
+  if (digitalRead(restaurarButtonPin) == LOW) {
+    restaurarPosiciones();
+    delay(500);
+  }
   
 }
 
