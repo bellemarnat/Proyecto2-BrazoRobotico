@@ -12,6 +12,8 @@ LiquidCrystal_I2C lcd(0x27,16,2);
 
 
 void setup() {
+  lcd.begin(16, 2);
+  lcd.backlight();
   Serial.begin(9600);
   mySerial.begin(9600); // Iniciar mySerial
 
@@ -19,11 +21,12 @@ void setup() {
   ADMUX = (1 << REFS0); // use AVcc as the reference
   ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); // Habilitar el ADC configurando el preescalador a 128
   
-  lcd.init();
-  lcd.backlight();
+ 
 }
 
 void loop() {
+  lcd.begin(16, 2);
+  lcd.backlight();  
   lcd.setCursor(0,0);
   lcd.print("Bienvenido/a");
   

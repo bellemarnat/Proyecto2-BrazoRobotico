@@ -82,10 +82,7 @@ void loop() {
   }
 
   
-  if (!servoMoved) {
-  servoAngle4 = map(potValue4, 0, 1023, 0, 180);
-  }
-  Servo4.write(servoAngle4);
+  
 }
 
 void assignValue(int index, String value) {
@@ -104,6 +101,10 @@ void assignValue(int index, String value) {
       break;
     case 3:
       val4 = map(val, 0, 1023, 0, 180);  // Map to 0 - 180 degrees for Servo
+      if (!servoMoved) {
+        servoAngle4 = map(val4, 0, 1023, 0, 180);
+      }
+      Servo4.write(servoAngle4);
       break;
   }
 }
