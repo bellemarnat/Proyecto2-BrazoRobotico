@@ -1,7 +1,7 @@
 #include <SoftwareSerial.h>
 #include <LiquidCrystal_I2C.h>
 
-SoftwareSerial mySerial(4, 5); // RX, TX
+SoftwareSerial mySerial(0, 1); // RX, TX
 
 #define JOY1_X 0 // Pin A0
 #define JOY1_Y 1 // Pin A1

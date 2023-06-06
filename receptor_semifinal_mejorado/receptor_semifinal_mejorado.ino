@@ -16,7 +16,7 @@ bool servoMoved = false;
 unsigned long startTime = 0; // Timer comienza en 0
 int servoAngle4 = 0;
 
-SoftwareSerial mySerial(4, 5); // RX, TX
+SoftwareSerial mySerial(0, 1); // RX, TX
 
 int val1, val2, val3, val4;
 int prev_val1, prev_val2, prev_val3, prev_val4;
