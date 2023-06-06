@@ -105,19 +105,13 @@ void loop() {
         String val3Str = input.substring(val3StartIndex, val3EndIndex);
         String val4Str = input.substring(val4StartIndex);
 
-        val1 = val1Str.toInt();
-        val2 = val2Str.toInt();
-        val3 = val3Str.toInt();
-        val4 = val4Str.toInt();
+        assignValue(0, val1Str);
+        assignValue(1, val2Str);
+        assignValue(2, val3Str);
+        assignValue(3, val4Str);
 
-        Serial.print("val1 = ");
-        Serial.print(val1);
-        Serial.print(", val2 = ");
-        Serial.print(val2);
-        Serial.print(", val3 = ");
-        Serial.print(val3);
-        Serial.print(", val4 = ");
-        Serial.println(val4);
+        printValues();
+        smoothServoMove();
       } else {
         Serial.println("Entrada recibida: " + input);
       }
@@ -150,12 +144,15 @@ void assignServoValue(int index, int val) {
   switch (index) {
     case 0:
       val1 = map(val, 0, 1023, 0, 180);  // Mapear a grados para el servo
+      Servo1.write(val1);
       break;
     case 1:
       val2 = map(val, 0, 1023, 0, 180);  // Mapear a grados para el servo
+      Servo2.write(val2);
       break;
     case 2:
       val3 = map(val, 0, 1023, 0, 180);  // Mapear a grados para el servo
+      Servo3.write(val3);
       break;
     case 3:
       val4 = map(val, 0, 1023, 0, 180);  // Mapear a grados para el servo
